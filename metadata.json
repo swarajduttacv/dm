@@ -1,0 +1,5 @@
+{
+  "name": "DocuMind",
+  "description": "Your intelligent document assistant that extracts information from your uploaded documents and answers your questions through a smart chatbot, powered by Gemini.",
+  "requestFramePermissions": []
+}
