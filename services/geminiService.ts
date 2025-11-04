@@ -5,6 +5,8 @@ let ai: GoogleGenAI;
 
 const getAiClient = (): GoogleGenAI => {
     if (!ai) {
+        // FIX: Per coding guidelines, the API key must be read from process.env.API_KEY and is assumed to be available.
+        // This change also resolves the 'import.meta.env' TypeScript error by removing its usage.
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     }
     return ai;
