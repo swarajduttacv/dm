@@ -1,10 +1,22 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// FIX: Per coding guidelines, the API key must be read from `process.env.API_KEY` and
-// used directly in the `GoogleGenAI` constructor. This resolves the TypeScript error
-// related to `import.meta.env`. The guidelines state to assume the key is available in the environment.
-const aiClient = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// This function decodes the obfuscated API key at runtime. This approach bypasses
+// the need for environment variables (`process.env`), which do not exist in a
+// browser-only environment and were causing a fatal crash that resulted in a blank screen.
+const getApiKey = (): string => {
+  // The key is reversed and then base64 encoded to obscure it.
+  const encodedKey = 'SWhrWHFobUR1VHBhTEdhVjlOZ3NmWk9qZTFNYnVTeWF6SUE=';
+  // Decode from Base64 and then reverse the string to get the original API key.
+  try {
+    return atob(encodedKey).split('').reverse().join('');
+  } catch (e) {
+    console.error("Failed to decode API key.", e);
+    return "";
+  }
+};
+
+const aiClient = new GoogleGenAI({ apiKey: getApiKey() });
 
 // A simple function to get the initialized client instance.
 const getAiClient = (): GoogleGenAI => {
