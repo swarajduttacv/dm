@@ -11,6 +11,7 @@ interface MainAppProps {
   onUpdateDocument: (docId: string, newText: string) => void;
   onAddFormAnalysis: (analysis: FormAnalysis) => void;
   onDeleteFormAnalysis: (analysisId: string) => void;
+  onApiKeyInvalid: () => void;
 }
 
 
@@ -67,7 +68,7 @@ const AnalysisIcon: React.FC<{className?: string}> = ({className}) => (
 );
 
 
-export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument, onDeleteDocument, onUpdateDocument, onAddFormAnalysis, onDeleteFormAnalysis }) => {
+export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument, onDeleteDocument, onUpdateDocument, onAddFormAnalysis, onDeleteFormAnalysis, onApiKeyInvalid }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -122,6 +123,22 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
     setImagePreview(null);
     if (imageInputRef.current) imageInputRef.current.value = "";
   };
+  
+  const handleApiError = (error: unknown) => {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    const lowerCaseError = errorMessage.toLowerCase();
+    
+    if (
+      lowerCaseError.includes("api key") || 
+      lowerCaseError.includes("requested entity was not found")
+    ) {
+      onApiKeyInvalid();
+      // We don't need to show a specific error message for this case,
+      // as the user will be prompted to select a new key.
+      return "There was an issue with the API Key. Please select a new one.";
+    }
+    return errorMessage;
+  }
 
   const handleSendMessage = async () => {
     if ((input.trim() === '' && !attachedImage) || isLoading) return;
@@ -200,7 +217,7 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
         setMessages(prev => [...prev, { role: 'model', content: response.text }]);
 
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+        const errorMessage = handleApiError(error);
         setMessages(prev => [...prev, { role: 'system', content: `Error: ${errorMessage}` }]);
     } finally {
         setIsLoading(false);
@@ -225,7 +242,7 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
       onAddDocument(newDocument);
       showToast("Document uploaded successfully!");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+      const errorMessage = handleApiError(error);
       setUploadError(errorMessage);
     } finally {
       setIsUploading(false);
@@ -255,7 +272,7 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
       onAddFormAnalysis(newAnalysis);
       setCurrentFormAnalysisTitle(`Results for: ${file.name}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+      const errorMessage = handleApiError(error);
       setFormAnalysisError(errorMessage);
     } finally {
       setIsAnalyzingForm(false);
