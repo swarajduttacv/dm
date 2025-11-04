@@ -15,8 +15,8 @@ import type { Document, FormFieldResult } from "../types";
 // then forwards them to the Google API. This way, the key is never exposed to
 // the public.
 const getApiKey = (): string => {
-    // This is a simple obfuscation technique: the key is Base64-encoded and reversed.
-    const obfuscatedKey = 'SWhrWHFobUR1VHBhTEdpVjlOZ3NmWk9qZTFNYkF1U3lhelJB';
+    // This is a simple obfuscation technique: the key is reversed then Base64-encoded.
+    const obfuscatedKey = 'SWhrWHFobUR1VHBhTEdpVjlOZ3NmWk9qZTFNYSB1YVN5eklB';
     try {
         const reversedKey = atob(obfuscatedKey);
         return reversedKey.split('').reverse().join('');
