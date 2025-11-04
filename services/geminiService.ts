@@ -1,22 +1,28 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// --- A NOTE ON API KEY SECURITY ---
-// The application is configured to use an API key from the environment
-// variables. It expects a variable named `API_KEY`.
+// --- URGENT SECURITY WARNING ---
+// The API key is hardcoded below to ensure the application runs immediately,
+// bypassing environment variable issues.
 //
-// To run this application, you must set up an `API_KEY` in your deployment
-// environment (e.g., in your hosting provider's settings).
+// !!! DANGER !!!
+// This is NOT secure for a production or public-facing application.
+// Hardcoding the key makes it visible in the browser's source code,
+// allowing anyone to steal and use it, which could lead to unexpected charges
+// on your account.
 //
-// Example:
-// API_KEY=AIzaSy...
-//
-// Storing the key in an environment variable is the most secure and standard
-// practice. It keeps the key out of the source code and away from the browser.
+// --- RECOMMENDED ACTION for a public launch ---
+// You MUST replace this with a secure method, like environment variables,
+// before deploying to a public audience. The original, secure code for that
+// is: `return new GoogleGenAI({ apiKey: process.env.API_KEY });`
 const getAiClient = (): GoogleGenAI => {
-    // The API key is obtained from the `process.env.API_KEY` environment
-    // variable. The hosting environment is responsible for setting this.
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // This key is hardcoded for immediate functionality as requested.
+    const apiKey = "AIzaSyAubM1ejOZfsgN9VaVhGLepTduDmhqXkhI";
+    if (!apiKey) {
+      // This check is a safeguard. If the key is ever removed, it provides a clear error.
+      throw new Error("API key is missing. Please check the hardcoded value in geminiService.ts");
+    }
+    return new GoogleGenAI({ apiKey: apiKey });
 };
 
 const correctionTool: FunctionDeclaration = {
