@@ -1,7 +1,14 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI;
+
+const getAiClient = (): GoogleGenAI => {
+    if (!ai) {
+        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    }
+    return ai;
+};
 
 const correctionTool: FunctionDeclaration = {
     name: 'correctDocumentInformation',
@@ -47,7 +54,7 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
       text: "Extract all visible text from this document. Present it clearly as raw text. Do not add any formatting or explanations.",
     };
 
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    const response: GenerateContentResponse = await getAiClient().models.generateContent({
       model: 'gemini-2.5-flash',
       contents: { parts: [imagePart, textPart] },
     });
@@ -60,7 +67,7 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
 };
 
 export const createChatSession = (): Chat => {
-  const chat = ai.chats.create({
+  const chat = getAiClient().chats.create({
     model: 'gemini-2.5-flash',
     config: {
       systemInstruction: "You are DocuMind, a helpful personal assistant. Your knowledge is strictly limited to the documents provided in the context. Answer the user's questions based only on this information. If the answer isn't in the documents, state that you cannot find the information in the provided documents. If the user tells you a piece of information is incorrect, you must use the `correctDocumentInformation` tool to fix it. Be concise and direct.",
@@ -135,7 +142,7 @@ ${documentContext}
             },
         };
 
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await getAiClient().models.generateContent({
             model: 'gemini-2.5-flash',
             contents: { parts: [formImagePart, textPart] },
             config: {

@@ -95,7 +95,10 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    chatSessionRef.current = { chat: createChatSession(), isInitialized: false };
+    // We reset the chat session here, but we don't create a new one immediately.
+    // This avoids calling the Gemini API setup on component mount and prevents a startup crash.
+    // The session will be created on-demand when the user sends their first message.
+    chatSessionRef.current = { chat: null, isInitialized: false };
     setMessages([{role: 'model', content: `Hello ${user.username}! Ask me anything about your documents.`}]);
   }, [user.documents, user.username]);
 
@@ -135,7 +138,9 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
 
     try {
         const session = chatSessionRef.current;
-        if (!session.chat) throw new Error("Chat not initialized");
+        if (!session.chat) {
+            session.chat = createChatSession();
+        }
 
         if (!session.isInitialized) {
             const contextMessage = getContextMessage(user.documents);
