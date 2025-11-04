@@ -11,7 +11,6 @@ interface MainAppProps {
   onUpdateDocument: (docId: string, newText: string) => void;
   onAddFormAnalysis: (analysis: FormAnalysis) => void;
   onDeleteFormAnalysis: (analysisId: string) => void;
-  onApiKeyInvalid: () => void;
 }
 
 
@@ -68,7 +67,7 @@ const AnalysisIcon: React.FC<{className?: string}> = ({className}) => (
 );
 
 
-export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument, onDeleteDocument, onUpdateDocument, onAddFormAnalysis, onDeleteFormAnalysis, onApiKeyInvalid }) => {
+export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument, onDeleteDocument, onUpdateDocument, onAddFormAnalysis, onDeleteFormAnalysis }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -128,15 +127,13 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     const lowerCaseError = errorMessage.toLowerCase();
     
-    if (
-      lowerCaseError.includes("api key") || 
-      lowerCaseError.includes("requested entity was not found")
-    ) {
-      onApiKeyInvalid();
-      // We don't need to show a specific error message for this case,
-      // as the user will be prompted to select a new key.
-      return "There was an issue with the API Key. Please select a new one.";
+    // Provide a more user-friendly message for API key errors,
+    // guiding towards the correct resolution (environment configuration)
+    // instead of a client-side action.
+    if (lowerCaseError.includes("api key")) {
+      return "An API key is not configured. The application cannot connect to the AI service. Please ensure the API key is set in the deployment environment.";
     }
+    
     return errorMessage;
   }
 
