@@ -1,13 +1,34 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// The singleton instance of the AI client has been removed.
-// A new instance is created on each call to `getAiClient` to ensure that the
-// client is always initialized with the most current `process.env.API_KEY`.
-// This prevents potential issues where the client might be initialized before
-// the API key is available in the execution environment.
+// --- A NOTE ON API KEY SECURITY ---
+// To prevent the API key from being easily discovered by browsing the website's
+// source code, it has been obfuscated. This is a simple method of hiding it
+// from casual inspection.
+//
+// However, please be aware that this is NOT foolproof security. A determined
+// person with technical skills can still reverse-engineer the code and find the
+// key.
+//
+// The ONLY truly secure way to protect an API key is to store it on a backend
+// server and have your frontend application make requests to your server, which
+// then forwards them to the Google API. This way, the key is never exposed to
+// the public.
+const getApiKey = (): string => {
+    // This is a simple obfuscation technique: the key is Base64-encoded and reversed.
+    const obfuscatedKey = 'SWhrWHFobUR1VHBhTEdpVjlOZ3NmWk9qZTFNYkF1U3lhelJB';
+    try {
+        const reversedKey = atob(obfuscatedKey);
+        return reversedKey.split('').reverse().join('');
+    } catch (e) {
+        console.error("Failed to decode API key. The key might be corrupted.", e);
+        return "";
+    }
+};
+
+
 const getAiClient = (): GoogleGenAI => {
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
+    return new GoogleGenAI({ apiKey: getApiKey() });
 };
 
 const correctionTool: FunctionDeclaration = {
