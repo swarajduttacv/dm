@@ -1,27 +1,24 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// --- URGENT SECURITY WARNING ---
-// The API key is hardcoded below to ensure the application runs immediately,
-// bypassing environment variable issues.
-//
-// !!! DANGER !!!
-// This is NOT secure for a production or public-facing application.
-// Hardcoding the key makes it visible in the browser's source code,
-// allowing anyone to steal and use it, which could lead to unexpected charges
-// on your account.
-//
-// --- RECOMMENDED ACTION for a public launch ---
-// You MUST replace this with a secure method, like environment variables,
-// before deploying to a public audience. The original, secure code for that
-// is: `return new GoogleGenAI({ apiKey: process.env.API_KEY });`
+// This function securely initializes the AI client using an API key from environment variables.
 const getAiClient = (): GoogleGenAI => {
-    // This key is hardcoded for immediate functionality as requested.
-    const apiKey = "AIzaSyAubM1ejOZfsgN9VaVhGLepTduDmhqXkhI";
+    // --- IMPORTANT SECURITY NOTE ---
+    // Your build tool (Vite) requires that environment variables exposed to the browser
+    // be prefixed with `VITE_`. This is a security feature to prevent accidental
+    // exposure of sensitive keys.
+    //
+    // --- ACTION REQUIRED ---
+    // In your deployment platform's settings (e.g., Vercel, Netlify, etc.),
+    // you MUST create an environment variable named EXACTLY `VITE_GEMINI_API_KEY`
+    // and set its value to your Gemini API key.
+    const apiKey = process.env.VITE_GEMINI_API_KEY;
+
     if (!apiKey) {
-      // This check is a safeguard. If the key is ever removed, it provides a clear error.
-      throw new Error("API key is missing. Please check the hardcoded value in geminiService.ts");
+      // This error will be displayed if the environment variable is not set correctly.
+      throw new Error("An API key is not configured. The application cannot connect to the AI service. Please ensure the VITE_GEMINI_API_KEY is set in the deployment environment.");
     }
+
     return new GoogleGenAI({ apiKey: apiKey });
 };
 
