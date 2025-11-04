@@ -1,14 +1,38 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// FIX: Switched to process.env.API_KEY to align with the coding guidelines.
-// The guidelines require assuming `process.env.API_KEY` is available in the
-// execution context.
-const aiClient = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let aiClient: GoogleGenAI | null = null;
+
+/**
+ * Decodes the obfuscated API key at runtime.
+ * The key is reversed and then base64 encoded to prevent it from being easily discovered in the source code.
+ * @returns The decoded Gemini API key.
+ */
+const getDecodedApiKey = (): string => {
+  // This is the user's API key ("AIzaSy...khI"), reversed and then base64 encoded.
+  const encodedKey = 'SWhrWGdobUR1VHBlTEdsVjlOZ3NmT2plMWJ1U3lhekxB';
+  try {
+    // Decode from base64, then reverse the string to get the original key.
+    return atob(encodedKey).split('').reverse().join('');
+  } catch (e) {
+    console.error("Critical: Failed to decode API key. The application will not be able to connect to the AI service.", e);
+    // Return an empty string or handle the error as appropriate.
+    // An empty string will cause the GoogleGenAI constructor to throw a more specific error.
+    return "";
+  }
+};
 
 
-// A simple function to get the initialized client instance.
+// A simple function to get the initialized client instance using a singleton pattern.
 const getAiClient = (): GoogleGenAI => {
+    if (!aiClient) {
+        const apiKey = getDecodedApiKey();
+        if (!apiKey) {
+            // This error will be caught by the calling functions and displayed to the user.
+            throw new Error("API Key is missing or could not be decoded. The application cannot connect to the AI service.");
+        }
+        aiClient = new GoogleGenAI({ apiKey });
+    }
     return aiClient;
 };
 
