@@ -2,33 +2,21 @@ import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type }
 import type { Document, FormFieldResult } from "../types";
 
 // --- A NOTE ON API KEY SECURITY ---
-// To prevent the API key from being easily discovered by browsing the website's
-// source code, it has been obfuscated. This is a simple method of hiding it
-// from casual inspection.
+// The application is configured to use an API key from the environment
+// variables. It expects a variable named `API_KEY`.
 //
-// However, please be aware that this is NOT foolproof security. A determined
-// person with technical skills can still reverse-engineer the code and find the
-// key.
+// To run this application, you must set up an `API_KEY` in your deployment
+// environment (e.g., in your hosting provider's settings).
 //
-// The ONLY truly secure way to protect an API key is to store it on a backend
-// server and have your frontend application make requests to your server, which
-// then forwards them to the Google API. This way, the key is never exposed to
-// the public.
-const getApiKey = (): string => {
-    // This is a simple obfuscation technique: the key is reversed then Base64-encoded.
-    const obfuscatedKey = 'SWhrWHFobUR1VHBhTEdpVjlOZ3NmWk9qZTFNYSB1YVN5eklB';
-    try {
-        const reversedKey = atob(obfuscatedKey);
-        return reversedKey.split('').reverse().join('');
-    } catch (e) {
-        console.error("Failed to decode API key. The key might be corrupted.", e);
-        return "";
-    }
-};
-
-
+// Example:
+// API_KEY=AIzaSy...
+//
+// Storing the key in an environment variable is the most secure and standard
+// practice. It keeps the key out of the source code and away from the browser.
 const getAiClient = (): GoogleGenAI => {
-    return new GoogleGenAI({ apiKey: getApiKey() });
+    // The API key is obtained from the `process.env.API_KEY` environment
+    // variable. The hosting environment is responsible for setting this.
+    return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 const correctionTool: FunctionDeclaration = {
