@@ -127,11 +127,14 @@ export const MainApp: React.FC<MainAppProps> = ({ user, onLogout, onAddDocument,
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     const lowerCaseError = errorMessage.toLowerCase();
     
-    // Provide a more user-friendly message for API key errors,
-    // guiding towards the correct resolution (environment configuration)
-    // instead of a client-side action.
+    // FIX: Provide a more specific error message for common API key issues,
+    // guiding the user towards the correct solution (checking key restrictions).
+    if (lowerCaseError.includes("api key not valid") || lowerCaseError.includes("api key is not enabled")) {
+        return "The API key is not valid or not configured for browser use. Please check your Gemini API key settings and ensure the website's domain is on the allowed list of referrers.";
+    }
+    
     if (lowerCaseError.includes("api key")) {
-      return "An API key is not configured. The application cannot connect to the AI service. Please ensure the API key is set in the deployment environment.";
+      return "An API key has not been configured correctly. The application cannot connect to the AI service. Please ensure the API_KEY is set in the deployment environment.";
     }
     
     return errorMessage;

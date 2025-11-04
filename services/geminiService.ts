@@ -1,11 +1,22 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// FIX: Adhering to the Gemini API guidelines to use process.env.API_KEY for the API key. This also resolves the TypeScript error.
-const aiClient = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// FIX: Initialize the AI client lazily to prevent crashes on startup
+// if the API key is not immediately available.
+let aiClient: GoogleGenAI | null = null;
 
-// A simple function to get the initialized client instance.
+// This function now ensures the client is created only when needed,
+// and with a valid API key.
 const getAiClient = (): GoogleGenAI => {
+    if (!aiClient) {
+        // FIX: Use `import.meta.env.VITE_API_KEY` to correctly access environment variables in a Vite project. This is the standard and secure way to handle client-side keys.
+        const apiKey = import.meta.env.VITE_API_KEY;
+
+        if (!apiKey) {
+            throw new Error("Gemini API key not found. Please set 'VITE_API_KEY' in your deployment environment variables.");
+        }
+        aiClient = new GoogleGenAI({ apiKey });
+    }
     return aiClient;
 };
 
