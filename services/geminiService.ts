@@ -1,15 +1,10 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-// FIX: Aligned with Gemini API guidelines. The API key MUST be obtained exclusively from `process.env.API_KEY`.
-// This resolves the 'Property 'env' does not exist on type 'ImportMeta'' error by using the mandated method.
-if (!process.env.API_KEY) {
-    // This provides a clear error message if the environment variable is missing.
-    throw new Error("API_KEY is not set in the environment. Please set it in your deployment provider's settings.");
-}
-
-// FIX: Per Gemini API guidelines, initialize with the API key directly from process.env.
+// FIX: Per coding guidelines, the Gemini client must be initialized directly with `process.env.API_KEY`.
+// This resolves the TypeScript error related to `import.meta.env` and aligns with the guideline to assume the API key is always available.
 const aiClient = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
 
 // A simple function to get the initialized client instance.
 const getAiClient = (): GoogleGenAI => {
