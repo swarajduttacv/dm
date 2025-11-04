@@ -1,15 +1,13 @@
 import { GoogleGenAI, GenerateContentResponse, Chat, FunctionDeclaration, Type } from "@google/genai";
 import type { Document, FormFieldResult } from "../types";
 
-let ai: GoogleGenAI;
-
+// The singleton instance of the AI client has been removed.
+// A new instance is created on each call to `getAiClient` to ensure that the
+// client is always initialized with the most current `process.env.API_KEY`.
+// This prevents potential issues where the client might be initialized before
+// the API key is available in the execution environment.
 const getAiClient = (): GoogleGenAI => {
-    if (!ai) {
-        // FIX: Per coding guidelines, the API key must be read from process.env.API_KEY and is assumed to be available.
-        // This change also resolves the 'import.meta.env' TypeScript error by removing its usage.
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    }
-    return ai;
+    return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 const correctionTool: FunctionDeclaration = {
