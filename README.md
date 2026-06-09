@@ -1,5 +1,5 @@
 <div align="center">
-<img width="1200" height="400" alt="documind banner" src="./assets/banner.png" />
+<img width="1200" height="400" alt="documind banner" src="./assets/banner_dm_17809874418981.png" />
 
 # documind
 
