@@ -65,7 +65,7 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
     };
 
     const response: GenerateContentResponse = await getAiClient().models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash',
       contents: { parts: [imagePart, textPart] },
     });
 
@@ -78,7 +78,7 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
 
 export const createChatSession = (): Chat => {
   const chat = getAiClient().chats.create({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.1-flash-lite',
     config: {
       systemInstruction: "You are DocuMind, a helpful personal assistant. Your knowledge is strictly limited to the documents provided in the context. Answer the user's questions based only on this information. If the answer isn't in the documents, state that you cannot find the information in the provided documents. If the user tells you a piece of information is incorrect, you must use the `correctDocumentInformation` tool to fix it. Be concise and direct.",
       tools: [{ functionDeclarations: [correctionTool] }],
