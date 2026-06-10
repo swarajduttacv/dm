@@ -65,7 +65,7 @@ export const extractTextFromImage = async (file: File): Promise<string> => {
     };
 
     const response: GenerateContentResponse = await getAiClient().models.generateContent({
-      model: 'gemini-3.5-flash',
+      model: 'gemini-3-flash-preview',
       contents: { parts: [imagePart, textPart] },
     });
 
