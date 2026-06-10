@@ -153,7 +153,7 @@ ${documentContext}
         };
 
         const response: GenerateContentResponse = await getAiClient().models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.1-flash-lite',
             contents: { parts: [formImagePart, textPart] },
             config: {
                 responseMimeType: "application/json",
