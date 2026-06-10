@@ -10,7 +10,7 @@ let aiClient: GoogleGenAI | null = null;
 const getAiClient = (): GoogleGenAI => {
     if (!aiClient) {
         // FIX: Use `import.meta.env.VITE_API_KEY` to correctly access environment variables in a Vite project. This is the standard and secure way to handle client-side keys.
-        const apiKey = import.meta.env.VITE_API_KEY;
+        const apiKey = import.meta.env.API_KEY;
 
         if (!apiKey) {
             throw new Error("Gemini API key not found. Please set 'VITE_API_KEY' in your deployment environment variables.");
